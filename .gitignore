@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+FakeNewsDetection/venv/
+
+# IDE
+.vscode/
+
+# Temporary files
+*.log
+.DS_Store
+# Datasets
+WELFake_Dataset.csv
+cleaned_WELFake.csv
+
+# Trained model
+fake_news_model.joblib

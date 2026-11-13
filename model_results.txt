@@ -1,0 +1,22 @@
+PROJECT: Fake News Detection System
+
+Dataset: WELFake
+Original records: 72,134
+Cleaned records: 63,676
+
+Algorithm: Logistic Regression
+Feature Extraction: TF-IDF
+Training samples: 50,940
+Testing samples: 12,736
+
+Accuracy: 95.90%
+
+Label convention (WELFake): 0 = Fake, 1 = Real
+Fake F1-score: 96.25%
+Real F1-score: 95.48%
+Macro F1-score: 95.87%
+
+Correct predictions: 12,214
+Incorrect predictions: 522
+
+Model file: fake_news_model.joblib

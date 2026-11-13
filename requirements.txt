@@ -1,0 +1,19 @@
+# Fake News Detection System - direct dependencies
+# Environment: Python 3.11.9, pins taken from `python -m pip freeze`
+# Transitive packages (Werkzeug, Jinja2, threadpoolctl, etc.) are installed
+# automatically and are intentionally not listed here.
+
+# Web application
+Flask==3.1.3
+
+# Saved model (TF-IDF + Logistic Regression pipeline in fake_news_model.joblib).
+# Keep these four exactly as pinned: the pickle depends on them.
+scikit-learn==1.9.1
+joblib==1.6.0
+numpy==2.4.6
+scipy==1.17.1
+
+# Dataset inspection, cleaning and evaluation scripts
+pandas==3.1.1
+matplotlib==3.11.2
+seaborn==0.13.2
