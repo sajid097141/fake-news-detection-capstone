@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#060a18">
+  <meta name="description" content="VERITAS compares news text with patterns learned from the WELFake dataset. It is a machine-learning prediction, not a fact check.">
+  <title>VERITAS — AI-Powered News Analysis</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="VERITAS home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <defs><linearGradient id="bm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#22c7ee"/></linearGradient></defs>
+          <circle cx="16" cy="16" r="14" fill="none" stroke="url(#bm)" stroke-width="3"/>
+          <path d="M9.5 16.5l4.5 4.5 8.5-9.5" fill="none" stroke="url(#bm)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">VERITAS</span>
+        <span class="brand-tag">AI-Powered News Analysis</span>
+      </a>
+      <a class="header-link" href="#about">About the model</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">See how a news article reads to a trained model.</h1>
+      <p class="lede">VERITAS compares the wording of a text with patterns learned from labelled articles in the WELFake dataset, then reports which group it resembles. It does not check whether anything in the text is true.</p>
+    </section>
+
+    <section class="wrap" aria-labelledby="analyze-title">
+      <div class="panel analyzer">
+        <h2 id="analyze-title">Analyze a news article</h2>
+        <form id="analyze-form" novalidate>
+          <div class="field">
+            <label for="title">Headline</label>
+            <input id="title" name="title" type="text" autocomplete="off" placeholder="Paste the article headline" id="title"
+    
+    type="text"
+    maxlength="1000"
+    autocomplete="off"
+    placeholder="Paste the article headline">
+                    
+          </div>
+          <div class="field">
+            <label for="article">Article text</label>
+            <textarea id="article" name="article" rows="10" placeholder="Paste the full article here. Full articles give the most reliable results "
+    name="article"
+    rows="10"
+    maxlength="50000"
+    placeholder="Paste the full article here. Full articles give the most reliable results."."></textarea>
+            <p class="counter" id="char-count" aria-live="off"><span id="char-num">0</span> characteHeadline-onlyrs, <span id="word-num">0</span> words</p>
+          </div>
+          
+          <div class="actions">
+            <button type="submit" id="analyze-btn" class="btn btn-primary">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="btn-label">Analyze text</span>
+            </button>
+            <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="results" class="wrap results" aria-labelledby="results-title" hidden>
+      <div class="panel result-panel" id="result-panel" data-verdict="">
+        <h2 id="results-title">Model prediction</h2>
+        <div class="verdict">
+          <div>
+            <p class="verdict-label" id="verdict-label">—</p>
+            <p class="verdict-sub" id="verdict-sub"></p>
+          </div>
+          <div class="confidence">
+            <p class="confidence-value" id="confidence-value">—</p>
+            <p class="confidence-caption">model confidence</p>
+          </div>
+        </div>
+
+        <div class="meters">
+          <div class="meter">
+            <div class="meter-head"><span>Fake</span><span id="prob-fake-value">0%</span></div>
+            <div class="track" id="prob-fake" role="meter" aria-label="Probability of the Fake class" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill fill-fake" id="prob-fake-bar"></div></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Real</span><span id="prob-real-value">0%</span></div>
+            <div class="track" id="prob-real" role="meter" aria-label="Probability of the Real class" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill fill-real" id="prob-real-bar"></div></div>
+          </div>
+        </div>
+
+        <p class="notice notice-warn" id="result-experimental" hidden>Experimental result: only a headline was supplied. Treat this prediction with extra caution.</p>
+        <p class="result-disclaimer" id="result-disclaimer">This is a machine-learning prediction based on text patterns. It is not a fact check.</p>
+      </div>
+    </section>
+
+    <section id="about" class="wrap about" aria-labelledby="about-title">
+      <h2 id="about-title">About the model and its limits</h2>
+      <div class="panel about-grid">
+        <article>
+          <h3>What it is</h3>
+          <p>A TF-IDF text representation (single words and word pairs) feeding a Logistic Regression classifier. It was trained on 63,676 cleaned articles from the WELFake dataset, where label 0 means Fake and 1 means Real.</p>
+        </article>
+        <article>
+          <h3>How it was tested</h3>
+          <p>On 12,736 held-out WELFake articles it reached 95.90% accuracy and a 95.87% macro F1-score. That is a score on the same dataset it learned from, not a measure of real-world accuracy.</p>
+        </article>
+        <article>
+          <h3>Where it falls short</h3>
+          <p>It cannot verify facts or sources, and it may partly learn how certain publishers write. It works on English text. Confidence is the model's own probability, not a guarantee.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <p>VERITAS is a Class XII Artificial Intelligence capstone project. Predictions run locally on this machine and no text is sent to external services.</p>
+  </footer>
+
+  <div class="disclaimer-bar" role="note">
+    <p><strong>Not a fact-checking service.</strong> Results are machine-learning predictions of text patterns and can be wrong. Verify important claims with trusted sources.</p>
+  </div>
+
+  <p class="sr-only" id="sr-status" role="status" aria-live="polite"></p>
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>
