@@ -165,16 +165,16 @@ const title = titleEl.value.trim();
       showError("Article is too short. Please provide at least 100 characters.");
       articleEl.focus(); return;
     }
-    const words = article.toLowerCase().match(/\\b[\\w']+\\b/g) || [];
+    const words = article.toLowerCase().match(/\b[\w']+\b/g) || [];
     if (words.length < 20) {
       showError("Please provide a more detailed article with at least 20 words.");
       articleEl.focus(); return;
     }
-    if (/(.)\\1{7,}/.test(article)) {
+    if (/(.)\1{7,}/.test(article)) {
       showError("Your article contains unusually repeated characters. Please check the text.");
       articleEl.focus(); return;
     }
-    const lines = article.split(/\\r?\\n/).map(line => line.trim().toLowerCase()).filter(line => line.length >= 30);
+    const lines = article.split(/\r?\n/).map(line => line.trim().toLowerCase()).filter(line => line.length >= 30);
     if (lines.some((line, index) => lines.indexOf(line) !== index)) {
       showError("Your article contains repeated lines. Please check the text.");
       articleEl.focus(); return;
