@@ -1,394 +1,248 @@
-# Fake News Detection System
+# VERITAS — AI-Powered News Analysis
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9.1-orange)
-![ML
-pipeline](https://img.shields.io/badge/ML%20pipeline-completed-brightgreen)
-![Web
-app](https://img.shields.io/badge/Flask%20web%20app-planned-lightgrey)
+![Flask](https://img.shields.io/badge/Flask-3.1.3-black)
+![Project](https://img.shields.io/badge/CBSE-Class%20XII%20AI%20Capstone-6c63ff)
 
-A machine-learning project that classifies news text as **Fake** or
-**Real** by learning textual patterns from the WELFake dataset, using
-TF-IDF features and Logistic Regression.
+A machine-learning-based educational project that analyses English news articles and classifies their writing patterns as **Fake** or **Real**, based on examples in the WELFake dataset.
 
-**Subject:** Artificial Intelligence (843) \| **Project type:** CBSE
-Class XII Capstone Project **Author:** Sajid Ekbal Choudhury\
-**School:** PM SHRI Kendriya Vidyalaya 210 CoBRA CRPF Dalgaon, Assam\
-**Academic year:** 2026--27
+> **Important:** VERITAS is a text-pattern classifier, not a fact-checking service. Its output does not establish whether a news story or claim is true.
 
-> **Project status:** The machine-learning pipeline (data cleaning,
-> training, model comparison, evaluation and command-line testing) is
-> **complete**. The Flask web application is **planned and not yet
-> implemented**.
+**Subject:** Artificial Intelligence (843) · **Project:** CBSE Class XII Capstone  
+**Author:** Sajid Ekbal Choudhury  
+**School:** PM SHRI Kendriya Vidyalaya 210 CoBRA CRPF Dalgaon, Assam  
+**Academic year:** 2026–27
 
-------------------------------------------------------------------------
+---
 
-## Table of Contents
+## Contents
 
-1.  [Project Overview](#1-project-overview)
-2.  [Problem Statement](#2-problem-statement)
-3.  [Objectives](#3-objectives)
-4.  [Key Features](#4-key-features)
-5.  [Technology Stack](#5-technology-stack)
-6.  [Dataset: WELFake](#6-dataset-welfake)
-7.  [Methodology](#7-methodology-tf-idf--logistic-regression)
-8.  [Model Evaluation](#8-model-evaluation)
-9.  [Confusion Matrix](#9-confusion-matrix)
-10. [Project Structure](#10-project-structure)
-11. [Installation and Setup](#11-installation-and-setup)
-12. [Running the Existing ML
-    Scripts](#12-running-the-existing-ml-scripts)
-13. [Limitations and Ethical
-    Considerations](#13-limitations-and-ethical-considerations)
-14. [Disclaimer](#14-disclaimer)
-15. [Documentation](#15-documentation)
+- [Overview](#overview)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Technology Stack](#technology-stack)
+- [Dataset](#dataset)
+- [Model Performance](#model-performance)
+- [Project Structure](#project-structure)
+- [Setup and Run](#setup-and-run)
+- [API Endpoints](#api-endpoints)
+- [Limitations](#limitations)
+- [Disclaimer](#disclaimer)
 
-------------------------------------------------------------------------
+## Overview
 
-## 1. Project Overview
+VERITAS uses a trained scikit-learn pipeline to analyse the text of a news article. The text is converted into numerical features using **TF-IDF** and passed to a **Logistic Regression** classifier.
 
-This project builds a text classifier that estimates whether a news
-article resembles the **Fake** or **Real** examples in the WELFake
-dataset. Article text is converted into numerical features with
-**TF-IDF** (unigrams and bigrams), and a **Logistic Regression**
-classifier is trained on those features. The trained model is saved as a
-single scikit-learn `Pipeline`, so raw text can be passed straight to it
-for prediction.
+The project includes a Flask web application with a browser-based interface. Users provide a headline and the full article text; the application returns the model's predicted class and its class-probability estimates.
 
-The system detects **patterns in language learned from its training
-data**. It does **not** verify facts, check sources, or determine
-whether a claim is true.
+The model was trained on labelled examples from WELFake. It learns statistical associations in that dataset and does not independently verify claims, consult news sources, or check the credibility of publishers.
 
-## 2. Problem Statement
+## Features
 
-Misleading news spreads quickly online, and manually reviewing every
-article is not practical. This project explores whether a lightweight,
-interpretable machine-learning model can recognise the linguistic
-patterns that distinguish articles labelled *fake* from those labelled
-*real* in a public dataset, and how reliably it does so on unseen test
-data from that same dataset.
+- Browser-based interface built with HTML, CSS and JavaScript.
+- Flask backend serving the trained machine-learning model.
+- Full-article input with headline and article text.
+- Fake/Real prediction with class-probability estimates.
+- Input validation, including checks for missing, excessively long and low-quality/repetitive article text.
+- Health-check endpoint for checking whether the API is running.
+- Model and dataset evaluation using accuracy, precision, recall, F1-score and a confusion matrix.
+- Runs locally after the required Python packages and model file are available; prediction does not require a paid API or external AI service.
 
-## 3. Objectives
+## How It Works
 
--   Clean and audit the WELFake dataset to produce a consistent training
-    file.
--   Build a TF-IDF + Logistic Regression text-classification pipeline.
--   Compare the pipeline against a second algorithm (Multinomial Naive
-    Bayes).
--   Evaluate the chosen model using accuracy, precision, recall,
-    F1-score and a confusion matrix.
--   Provide a command-line tool to test the trained model on new text.
--   *(Planned)* Provide a Flask-based web interface for the trained
-    model, with clear wording that results are pattern-based predictions
-    and not fact-checks.
+1. **Input:** The user enters a headline and the full article text.
+2. **Validation:** The Flask application checks the request and validates the article input.
+3. **Text preparation:** The headline and article body are joined into one text string, matching the format used during training.
+4. **Feature extraction:** The fitted TF-IDF vectorizer transforms the text into numerical features.
+5. **Classification:** Logistic Regression predicts the class.
+6. **Output:** The application displays the predicted label and model probability estimates.
 
-## 4. Key Features
+### Model pipeline
 
-### Completed (machine learning)
+`News text → TF-IDF Vectorizer → Logistic Regression → Predicted class`
 
--   Dataset inspection and audit scripts (missing values, duplicates,
-    empty articles, conflicting labels).
--   Data cleaning that builds a combined `title + article` text field.
--   TF-IDF + Logistic Regression pipeline, saved with `joblib`.
--   Model comparison: Logistic Regression vs. Multinomial Naive Bayes.
--   Evaluation report with accuracy, per-class precision/recall/F1 and
-    macro F1.
--   Evaluation graphs: confusion matrix, model comparison, class-wise
-    performance.
--   Command-line prediction script that reports a verdict and model
-    confidence.
--   Script for inspecting the saved model (pipeline steps, classes,
-    vocabulary).
+The saved model is a complete scikit-learn Pipeline, so the vectorizer and classifier are loaded together.
 
-### Planned (Flask web application, not yet implemented)
+## Technology Stack
 
--   Web interface where a user pastes a **full article** as the primary
-    input.
--   Result display showing the predicted class and the model's class
-    probabilities.
--   A headline-only mode, to be clearly marked **experimental**, since
-    the model was trained on full-article text.
--   A results page presenting the evaluation metrics and graphs.
--   Prominent on-page disclaimer that the tool does not fact-check news.
+| Area | Technology |
+|---|---|
+| Programming language | Python 3.11.9 |
+| Machine learning | scikit-learn |
+| Text representation | TF-IDF (unigrams and bigrams) |
+| Classifier | Logistic Regression |
+| Model persistence | joblib |
+| Data processing | pandas, NumPy, SciPy |
+| Backend | Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Visualisation | Matplotlib, Seaborn |
 
-## 5. Technology Stack
+Exact dependency versions are listed in [requirements.txt](requirements.txt).
 
-  -----------------------------------------------------------------------
-  Area                                Tools
-  ----------------------------------- -----------------------------------
-  Language                            Python 3.11.9
+## Dataset
 
-  Machine learning                    scikit-learn 1.9.1 (TF-IDF,
-                                      Logistic Regression, Multinomial
-                                      Naive Bayes)
+- **Dataset:** WELFake
+- **Source:** [WELFake dataset — Zenodo](https://zenodo.org/records/4561253)
+- **Original records:** 72,134
+- **Records after cleaning:** 63,676
+- **Training samples:** 50,940
+- **Test samples:** 12,736
+- **Split:** 80% training / 20% testing, stratified by label, with `random_state=42`
 
-  Model storage                       joblib 1.6.0
+### Label convention
 
-  Data handling                       pandas 3.1.1, NumPy 2.4.6, SciPy
-                                      1.17.1
+| Label | Meaning |
+|---:|---|
+| `0` | Fake |
+| `1` | Real |
 
-  Visualisation                       Matplotlib 3.11.2, Seaborn 0.13.2
+The model was trained using the article title and body joined into a single text input. The web application therefore requires the full article body; headline-only predictions are not supported.
 
-  Web backend *(planned)*             Flask 3.1.3
+## Model Performance
 
-  Web frontend *(planned)*            HTML, CSS, JavaScript
-  -----------------------------------------------------------------------
+The selected Logistic Regression model was evaluated on a held-out test set of 12,736 WELFake records.
 
-Exact versions are pinned in [`requirements.txt`](requirements.txt).
+### Overall metrics
 
-## 6. Dataset: WELFake
+| Metric | Result |
+|---|---:|
+| Accuracy | **95.90%** |
+| Macro F1-score | **95.87%** |
+| Correct predictions | 12,214 |
+| Incorrect predictions | 522 |
 
--   **Source:** [WELFake dataset on
-    Zenodo](https://zenodo.org/records/4561253), a collection of news
-    articles labelled as fake or real and compiled from multiple
-    existing news datasets.
--   **Original records:** 72,134
--   **Records after cleaning:** 63,676
--   **Used columns:** `combined_text` (input) and `label` (target)
+### Class-wise metrics
 
-**Label convention (from the official WELFake documentation):**
-
-  Label   Meaning
-  ------- ----------
-  `0`     **Fake**
-  `1`     **Real**
-
-The cleaning step does not remap labels, so the trained model keeps this
-convention.
-
-**Text preparation:** the cleaning script builds each input as the
-article title and body joined by a single space (with surrounding
-whitespace removed), and missing titles or bodies are treated as empty
-text. Any application that sends text to the model should construct its
-input the same way.
-
-**Train/test split:** 80% / 20%, stratified by label, with
-`random_state=42`.
-
-  Split      Samples
-  ---------- ---------
-  Training   50,940
-  Testing    12,736
-
-## 7. Methodology: TF-IDF + Logistic Regression
-
-The model is a scikit-learn `Pipeline` with two stages.
-
-1.  **TF-IDF vectorisation** (`TfidfVectorizer`)
-    -   lowercase text, English stop-words removed
-    -   unigrams and bigrams (`ngram_range=(1, 2)`)
-    -   up to 50,000 features, terms must appear in at least 2 documents
-        (`min_df=2`)
-    -   sublinear term-frequency scaling
-2.  **Classification** (`LogisticRegression`)
-    -   `liblinear` solver, `max_iter=1000`, `random_state=42`
-
-The dataset is split **before** vectorisation, and the vectorizer lives
-inside the pipeline. The vocabulary is therefore learned from the
-training data only, which avoids data leakage into the test set.
-
-A **Multinomial Naive Bayes** classifier with the same TF-IDF settings
-was trained for comparison. Logistic Regression performed clearly better
-and was selected as the final model.
-
-## 8. Model Evaluation
-
-All figures are measured on the **held-out test set of 12,736 articles**
-from the WELFake dataset.
-
-> **Note:** 95.90% is held-out test accuracy on WELFake. It is **not** a
-> proven measure of real-world accuracy. See
-> [Limitations](#13-limitations-and-ethical-considerations).
-
-### Overall performance (Logistic Regression)
-
-  Metric                  Value
-  ----------------------- ------------
-  Accuracy                **95.90%**
-  Macro F1-score          **95.87%**
-  Correct predictions     12,214
-  Incorrect predictions   522
-
-### Class-wise performance
-
-  Class          Precision   Recall   F1-score
-  -------------- ----------- -------- ------------
-  **Fake (0)**   96.21%      96.29%   **96.25%**
-  **Real (1)**   95.53%      95.43%   **95.48%**
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Fake | 96.21% | 96.29% | **96.25%** |
+| Real | 95.53% | 95.43% | **95.48%** |
 
 ### Model comparison
 
-  Model                                Accuracy     Macro F1
-  ------------------------------------ ------------ ------------
-  **Logistic Regression** (selected)   **95.90%**   **95.87%**
-  Multinomial Naive Bayes              88.87%       88.80%
+| Model | Accuracy | Macro F1-score |
+|---|---:|---:|
+| **Logistic Regression (selected)** | **95.90%** | **95.87%** |
+| Multinomial Naive Bayes | 88.87% | 88.80% |
 
-![Model comparison](results/model_comparison.png)
+These are test-set results from WELFake. They should not be interpreted as the application's real-world fact-checking accuracy.
 
-![Class-wise performance](results/class_performance_corrected.png)
+## Project Structure
 
-## 9. Confusion Matrix
-
-The matrix shows how the 12,736 test articles were classified. Rows are
-the actual labels and columns are the predicted labels (`Fake = 0`,
-`Real = 1`). The correct predictions (12,214) lie on the diagonal and
-the 522 errors lie off it.
-
-![Confusion matrix](results/confusion_matrix_corrected.png)
-
-## 10. Project Structure
-
-``` text
+```text
 CAPSTONE/
-├── clean_data.py            # Builds cleaned_WELFake.csv from the raw dataset
-├── audit_data.py            # Checks missing values, duplicates, empty text, label conflicts
-├── inspect_data.py          # Prints dataset shape, columns, label distribution, samples
-├── train_model.py           # Trains the TF-IDF + Logistic Regression pipeline
-├── compare_models.py        # Compares Logistic Regression and Naive Bayes
-├── evaluate_model.py        # Evaluates the saved model, saves the confusion matrix
-├── model_visuals.py         # Generates the comparison and class-wise graphs
-├── inspect_saved_model.py   # Inspects the saved pipeline (steps, classes, vocabulary)
-├── test_model.py            # Command-line prediction tool
-├── test_dataset_samples.py  # Tests the model on sample dataset records
-├── model_results.txt        # Summary of evaluation results
-├── requirements.txt         # Pinned Python dependencies
-├── results/                 # Evaluation graphs (PNG)
-├── docs/                    # Project documentation
-└── webapp/                  # PLANNED: Flask backend and HTML/CSS/JS frontend
-
-Not included in the repository (see Installation):
-    WELFake_Dataset.csv, cleaned_WELFake.csv, fake_news_model.joblib
+├── clean_data.py
+├── audit_data.py
+├── inspect_data.py
+├── train_model.py
+├── compare_models.py
+├── evaluate_model.py
+├── model_visuals.py
+├── inspect_saved_model.py
+├── test_model.py
+├── test_dataset_samples.py
+├── model_results.txt
+├── requirements.txt
+├── results/
+├── docs/
+└── webapp/
+    ├── app.py
+    ├── predictor.py
+    ├── templates/
+    │   └── index.html
+    └── static/
+        ├── css/
+        │   └── style.css
+        └── js/
+            └── app.js
 ```
 
-## 11. Installation and Setup
+The raw dataset, cleaned dataset and trained model may be kept locally and are not necessarily included in the Git repository. The trained model is expected at the project root as `fake_news_model.joblib`.
 
-**Prerequisites:** Python 3.11 and `pip`.
+## Setup and Run
 
-``` bash
-# 1. Clone the repository
-git clone <your-repository-url>
-cd <repository-folder>
+### 1. Clone the repository
 
-# 2. Create a virtual environment
+```bash
+git clone https://github.com/sajid097141/fake-news-detection-capstone.git
+cd fake-news-detection-capstone
+```
+
+### 2. Create and activate a virtual environment
+
+**Windows PowerShell:**
+
+```powershell
 python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
 
-# 3. Activate it
-#    Windows (PowerShell):
-venv\Scripts\Activate.ps1
-#    macOS / Linux:
+**macOS / Linux:**
+
+```bash
+python3 -m venv venv
 source venv/bin/activate
+```
 
-# 4. Install the pinned dependencies
+### 3. Install dependencies
+
+```bash
 python -m pip install -r requirements.txt
 ```
 
-**Data and model files.** The dataset and the trained model are **not
-stored in this repository**. To run the scripts you need to:
+### 4. Add the trained model
 
-1.  Download the WELFake dataset from its official source and place the
-    CSV in the project root.
-2.  Generate the cleaned dataset and the model yourself by following the
-    steps in the next section.
+Place the trained `fake_news_model.joblib` file in the repository root, alongside the main Python scripts. The Flask predictor loads the model from this location.
 
-## 12. Running the Existing ML Scripts
+If you need to recreate the model, obtain the WELFake dataset from the source above and follow the data-cleaning and training scripts in the project.
 
-Run all scripts from the project root, with the virtual environment
-activated. Scripts that draw graphs open a plot window; close it to let
-the script continue.
+### 5. Start the web application
 
-  ------------------------------------------------------------------------------------------------------
-  Step                    Command                            Purpose
-  ----------------------- ---------------------------------- -------------------------------------------
-  1                       `python inspect_data.py`           Inspect the raw dataset
+From the repository root:
 
-  2                       `python audit_data.py`             Check data quality
+```bash
+cd webapp
+python app.py
+```
 
-  3                       `python clean_data.py`             Produce `cleaned_WELFake.csv`
+Open **http://127.0.0.1:5000** in your browser.
 
-  4                       `python train_model.py`            Train and save `fake_news_model.joblib`
+Stop the local server with `Ctrl + C` in the terminal.
 
-  5                       `python compare_models.py`         Compare Logistic Regression and Naive Bayes
+## API Endpoints
 
-  6                       `python evaluate_model.py`         Print the classification report and save
-                                                             `results/confusion_matrix_corrected.png`
+The Flask application exposes these endpoints:
 
-  7                       `python model_visuals.py`          Save
-                                                             `results/class_performance_corrected.png`
-                                                             and the model-comparison graph
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Loads the web interface |
+| GET | `/api/health` | Returns the API health status |
+| POST | `/api/predict` | Validates article input and returns a prediction |
 
-  8                       `python inspect_saved_model.py`    Inspect the saved pipeline
+### Prediction request
 
-  9                       `python test_model.py`             Interactive command-line prediction (type
-                                                             `exit` to quit)
+Send JSON containing a headline and full article body:
 
-  10                      `python test_dataset_samples.py`   Test the model on sample dataset records
-  ------------------------------------------------------------------------------------------------------
+```json
+{
+  "title": "Example news headline",
+  "article": "The full text of the news article goes here..."
+}
+```
 
-**Important notes**
+A successful response contains a `result` object with the predicted label, confidence estimate and class-probability estimates, along with a disclaimer. Invalid input returns an error message and an appropriate HTTP status code.
 
--   `train_model.py` **retrains the model and overwrites** any existing
-    `fake_news_model.joblib`. Run it only when you intend to rebuild the
-    model.
--   `model_visuals.py` uses evaluation figures written directly into the
-    script, so update them if the model is ever retrained.
--   Pickled model files depend on library versions. Use the versions
-    pinned in `requirements.txt` so the saved model loads correctly.
--   Label convention for all outputs: **0 = Fake, 1 = Real**.
+## Limitations
 
-## 13. Limitations and Ethical Considerations
+- **Not a fact-checker:** The model does not verify claims against reliable sources or external databases.
+- **Dataset dependence:** Evaluation is based on a random held-out split from WELFake. Real-world performance may differ.
+- **Potential source and style bias:** The model may learn writing patterns associated with sources represented in the dataset.
+- **Label quality:** Errors or inconsistencies in the dataset labels can affect the model.
+- **Language and domain:** The model was trained on English news text and may not work reliably on other languages or very different writing styles.
+- **Full-article input:** The model was trained on title-plus-article text. Short headlines alone are outside the intended input format.
+- **Probability is not certainty:** The displayed confidence is the model's estimate, not a guarantee that its prediction is correct.
 
-### Limitations
+## Disclaimer
 
--   **Pattern detection, not fact-checking.** The model learns word and
-    phrase patterns. It cannot check whether a statement is true, and it
-    has no access to external sources.
--   **Dataset-bound results.** The reported scores come from a random
-    split of a single dataset. Performance on news from other sources,
-    topics or time periods may be lower, and the 95.90% figure should
-    not be read as real-world accuracy.
--   **Possible source or style bias.** WELFake combines several sources,
-    so the model may partly learn how certain publishers write rather
-    than whether content is accurate.
--   **Label quality.** The model inherits any errors or inconsistencies
-    in the dataset's labels.
--   **Text format.** The model was trained on article-style text (title
-    plus body). Very short inputs such as headlines differ from the
-    training data, so predictions for them are less reliable.
--   **Language and recency.** The model works on English text and
-    reflects the period and topics covered by the dataset.
--   **Limited tuning.** A single train/test split was used, with no
-    cross-validation or extensive hyperparameter search.
--   **Probabilities are not certainty.** The reported confidence is the
-    model's own probability estimate, not a guarantee that a prediction
-    is correct.
-
-### Ethical considerations
-
--   A prediction should be treated as **one signal** that prompts
-    further checking, never as a verdict on an article, publisher or
-    author.
--   Wrongly labelling genuine reporting as fake can unfairly harm its
-    source; wrongly labelling misleading content as real can give it
-    false credibility.
--   The tool should not be used to censor content or to make decisions
-    about people.
--   Users should verify important claims with trusted, independent
-    sources.
-
-## 14. Disclaimer
-
-This project is an **educational capstone project**. It identifies
-textual patterns learned from the WELFake dataset and **does not
-independently verify facts or the truthfulness of any news**. Its output
-may be wrong and must not be used as the sole basis for judging whether
-news is true or false.
-
-## 15. Documentation
-
-Additional documentation is stored in the [`docs/`](docs/) folder:
-
--   [Project overview](docs/PROJECT_OVERVIEW.md)
--   [Model documentation](docs/MODEL_DOCUMENTATION.md)
--   [System architecture](docs/SYSTEM_ARCHITECTURE.md)
--   [API documentation](docs/API_DOCUMENTATION.md)
--   [Testing documentation](docs/TESTING.md)
+VERITAS is an educational AI capstone project. Its predictions reflect patterns learned from the WELFake training dataset and **do not independently determine whether news is true or false**. Always verify important claims using multiple reliable and independent sources. Do not use this tool as the sole basis for judging a person, publisher, article or news organisation.
