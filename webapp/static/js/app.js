@@ -143,46 +143,50 @@
 
     
 const title = titleEl.value.trim();
-const article = articleEl.value.trim();
+    const article = articleEl.value.trim();
 
-// Maximum input limits
-if (title.length > 1000) {
-  showError("Headline cannot exceed 1,000 characters.");
-  titleEl.focus();
-  return;
-}
+    if (!title && !article) {
+      showError("Please enter a headline and the full article before analyzing.");
+      titleEl.focus(); return;
+    }
+    if (title.length > 1000) {
+      showError("Headline cannot exceed 1,000 characters.");
+      titleEl.focus(); return;
+    }
+    if (article.length > 50000) {
+      showError("Article cannot exceed 50,000 characters.");
+      articleEl.focus(); return;
+    }
+    if (!article) {
+      showError("Headline-only analysis is disabled. Please paste the full article.");
+      articleEl.focus(); return;
+    }
+    if (article.length < 100) {
+      showError("Article is too short. Please provide at least 100 characters.");
+      articleEl.focus(); return;
+    }
+    const words = article.toLowerCase().match(/\\b[\\w']+\\b/g) || [];
+    if (words.length < 20) {
+      showError("Please provide a more detailed article with at least 20 words.");
+      articleEl.focus(); return;
+    }
+    if (/(.)\\1{7,}/.test(article)) {
+      showError("Your article contains unusually repeated characters. Please check the text.");
+      articleEl.focus(); return;
+    }
+    const lines = article.split(/\\r?\\n/).map(line => line.trim().toLowerCase()).filter(line => line.length >= 30);
+    if (lines.some((line, index) => lines.indexOf(line) !== index)) {
+      showError("Your article contains repeated lines. Please check the text.");
+      articleEl.focus(); return;
+    }
+    const uniqueRatio = new Set(words).size / words.length;
+    if (words.length >= 30 && uniqueRatio < 0.30) {
+      showError("Your article contains highly repetitive wording. Please provide genuine article text.");
+      articleEl.focus(); return;
+    }
+    const headlineOnly = false;
 
-if (article.length > 50000) {
-  showError("Article cannot exceed 50,000 characters.");
-  articleEl.focus();
-  return;
-}
-
-// Empty input
-if (!title && !article) {
-  showError("Please enter a headline or article before analyzing.");
-  titleEl.focus();
-  return;
-}
-
-// Experimental headline-only validation
-if (!article && title.length < 20) {
-  showError("Headline must contain at least 20 characters for experimental analysis.");
-  titleEl.focus();
-  return;
-}
-
-// Minimum article length
-if (article && article.length < 100) {
-    showError("Please provide at least 100 characters of article text.");
-    articleEl.focus();
-    return;
-}
-
-// Keep only ONE declaration
-const headlineOnly = !article;
-
-setLoading(true);
+    setLoading(true);
 const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
