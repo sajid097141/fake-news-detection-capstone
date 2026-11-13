@@ -93,6 +93,16 @@ h2 { margin: 0 0 1.25rem; font-size: 1.35rem; letter-spacing: -0.01em; }
 h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
 
 /* Form */
+.form-error {
+  margin: 0 0 1.1rem;
+  padding: 0.85rem 1rem;
+  color: #ffb3c0;
+  background: rgba(255, 90, 120, 0.12);
+  border: 1px solid rgba(255, 90, 120, 0.42);
+  border-radius: 12px;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
 .analyzer { padding: clamp(1.25rem, 3vw, 2rem); }
 .field { margin-bottom: 1.25rem; }
 label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.95rem; }
