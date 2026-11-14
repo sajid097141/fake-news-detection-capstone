@@ -5,6 +5,7 @@ from factcheck import (
     add_relevance_labels,
     FactCheckAPIError,
 )
+from gdelt import search_news_coverage, GDELTAPIError
 
 import re
 from collections import Counter
@@ -210,6 +211,52 @@ def fact_check():
         return jsonify({
             "error": "An internal error occurred during live fact-check search."
         }), 500
+
+
+@app.route("/api/news-coverage", methods=["POST"])
+def news_coverage():
+    """Find recent news coverage matching a headline or claim."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid request. Please send JSON data."}), 400
+
+    title = data.get("title", "")
+    article = data.get("article", "")
+
+    if not isinstance(title, str) or not isinstance(article, str):
+        return jsonify({"error": "Headline and article must be text."}), 400
+
+    title = title.strip()
+    article = article.strip()
+
+    if len(title) > 1000 or len(article) > 50000:
+        return jsonify({"error": "Input exceeds the allowed character limit."}), 400
+
+    query = title or article[:500]
+    if len(query) < 10:
+        return jsonify({"error": "Please provide a longer headline or article for news search."}), 400
+
+    try:
+        result = search_news_coverage(query, max_records=10, timespan="3m")
+        return jsonify({
+            "status": "success",
+            "source": "GDELT DOC 2.0",
+            "result": result,
+            "disclaimer": (
+                "These are news articles matching your search query. "
+                "Their presence, number, or publication does not establish "
+                "whether the submitted claim is true."
+            ),
+        })
+    except GDELTAPIError as error:
+        app.logger.warning("GDELT news search failed: %s", error)
+        return jsonify({"error": str(error)}), 502
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid news search input."}), 400
+    except Exception:
+        app.logger.exception("GDELT news search failed")
+        return jsonify({"error": "An internal error occurred during news coverage search."}), 500
 
 
 if __name__ == "__main__":
