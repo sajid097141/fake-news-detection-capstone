@@ -1,5 +1,5 @@
 # Fake News Detection System - direct dependencies
-# Environment: Python 3.11.9, pins taken from `python -m pip freeze`
+# Environment: Python 3.11.9
 # Transitive packages (Werkzeug, Jinja2, threadpoolctl, etc.) are installed
 # automatically and are intentionally not listed here.
 
@@ -12,6 +12,10 @@ scikit-learn==1.9.1
 joblib==1.6.0
 numpy==2.4.6
 scipy==1.17.1
+
+# External API clients and environment configuration
+requests
+python-dotenv==1.2.2
 
 # Dataset inspection, cleaning and evaluation scripts
 pandas==3.1.1
