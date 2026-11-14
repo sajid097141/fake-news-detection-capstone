@@ -23,13 +23,13 @@
 
   /* ---------- Input helpers ---------- */
 
-  
+
   function updateInputState() {
     const text = articleEl.value;
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     charNum.textContent = text.length.toLocaleString();
     wordNum.textContent = words.toLocaleString();
-    
+
   }
 
   function showError(message) {
@@ -248,8 +248,8 @@
     event.preventDefault();
     clearError();
 
-    
-const title = titleEl.value.trim();
+
+    const title = titleEl.value.trim();
     const article = articleEl.value.trim();
 
     if (!title && !article) {
@@ -294,7 +294,7 @@ const title = titleEl.value.trim();
     const headlineOnly = false;
 
     setLoading(true);
-const controller = new AbortController();
+    const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {

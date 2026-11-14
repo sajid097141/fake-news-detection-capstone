@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WEBAPP_DIR = PROJECT_ROOT / "webapp"
 sys.path.insert(0, str(WEBAPP_DIR))
 
-import app as veritas_app  # noqa: E402
+from webapp import app as veritas_app  # noqa: E402
 
 
 VALID_ARTICLE = (

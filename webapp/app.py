@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify, render_template
-from predictor import predict_news
-from factcheck import (
+from .predictor import predict_news
+from .factcheck import (
     search_fact_checks,
     add_relevance_labels,
     FactCheckAPIError,
 )
-from gdelt import search_news_coverage, GDELTAPIError
+from .gdelt import search_news_coverage, GDELTAPIError
 
 import re
 from collections import Counter

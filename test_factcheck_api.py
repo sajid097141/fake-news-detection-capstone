@@ -1,45 +1,28 @@
+from webapp.factcheck import search_fact_checks, add_relevance_labels
 
-import os
-import requests
-from dotenv import load_dotenv
+query = "The Earth is flat"
 
-load_dotenv()
+result = search_fact_checks(query, page_size=5)
 
-API_KEY = os.getenv("GOOGLE_FACT_CHECK_API_KEY")
+filtered = add_relevance_labels(query, result["claims"])
 
-if not API_KEY:
-    print("ERROR: API key not found in .env")
-    raise SystemExit(1)
+print("\n=== RELEVANT CLAIMS ===")
 
-url = "https://factchecktools.googleapis.com/v1alpha1/claims:search"
+for claim in filtered["claims"]:
+    print(
+        claim["relevance"]["label"],
+        "|",
+        claim["claim_text"]
+    )
 
-params = {
-    "key": API_KEY,
-    "query": "The Earth is flat",
-    "pageSize": 3
-}
+print("\n=== EXCLUDED CLAIMS ===")
 
-try:
-    response = requests.get(url, params=params, timeout=20)
+for claim in filtered["excluded_claims"]:
+    print(
+        claim["relevance"]["label"],
+        "|",
+        claim["claim_text"]
+    )
 
-    print("HTTP Status:", response.status_code)
-
-    if response.status_code == 200:
-        data = response.json()
-        claims = data.get("claims", [])
-
-        print("API connection successful!")
-        print("Claims returned:", len(claims))
-
-        for claim in claims:
-            print("\nClaim:", claim.get("text"))
-            for review in claim.get("claimReview", []):
-                print("Publisher:", review.get("publisher", {}).get("name"))
-                print("Rating:", review.get("textualRating"))
-                print("Source:", review.get("url"))
-
-    else:
-        print("API Error:", response.json())
-
-except requests.RequestException as error:
-    print("Connection failed:", error)
+print("\n=== SUMMARY ===")
+print(filtered["relevance_summary"])
