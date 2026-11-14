@@ -2,8 +2,8 @@
 (() => {
   "use strict";
 
-  const API_URL = "/api/predict";
-  const TIMEOUT_MS = 30000;
+  const API_URL = "/api/analyze";
+  const TIMEOUT_MS = 60000;
   const $ = (id) => document.getElementById(id);
 
   const form = $("analyze-form");
@@ -100,8 +100,115 @@
     $(`prob-${prefix}`).setAttribute("aria-valuenow", value.toFixed(1));
   }
 
+
+  function makeEvidenceLink(url, label) {
+    if (typeof url !== "string" || !/^https?:\\/\\//i.test(url)) return null;
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = label;
+    return link;
+  }
+
+  function renderEvidence(evidence) {
+    const factList = $("fact-evidence-list");
+    const newsList = $("news-evidence-list");
+    factList.replaceChildren();
+    newsList.replaceChildren();
+
+    const facts = evidence && evidence.fact_checks;
+    if (!facts || facts.status !== "success" || !facts.result) {
+      const message = document.createElement("p");
+      message.className = "evidence-empty";
+      message.textContent = facts && facts.message ? facts.message : "Fact-check reviews are temporarily unavailable.";
+      factList.append(message);
+    } else {
+      const claims = facts.result.claims || [];
+      if (!claims.length) {
+        const empty = document.createElement("p");
+        empty.className = "evidence-empty";
+        empty.textContent = "No sufficiently relevant fact-check reviews were found.";
+        factList.append(empty);
+      }
+      claims.forEach((claim) => {
+        const card = document.createElement("article");
+        card.className = "evidence-card";
+
+        const relevance = document.createElement("span");
+        relevance.className = "evidence-tag";
+        relevance.textContent = claim.relevance && claim.relevance.label === "direct_match" ? "Direct match" : "Related claim";
+        card.append(relevance);
+
+        const claimTitle = document.createElement("h3");
+        claimTitle.textContent = claim.claim_text || "Claim text unavailable";
+        card.append(claimTitle);
+
+        (claim.reviews || []).forEach((review) => {
+          const reviewLine = document.createElement("p");
+          reviewLine.className = "evidence-meta";
+          reviewLine.textContent = [
+            review.publisher || "Unknown publisher",
+            review.textual_rating || "Rating not provided",
+            review.review_date ? "Reviewed: " + review.review_date.slice(0, 10) : ""
+          ].filter(Boolean).join(" · ");
+          card.append(reviewLine);
+
+          const link = makeEvidenceLink(review.url, review.title || "Read fact-check");
+          if (link) {
+            const linkWrap = document.createElement("p");
+            linkWrap.className = "evidence-link";
+            linkWrap.append(link);
+            card.append(linkWrap);
+          }
+        });
+        factList.append(card);
+      });
+
+      const excluded = facts.result.excluded_claims || [];
+      if (excluded.length) {
+        const note = document.createElement("p");
+        note.className = "evidence-empty";
+        note.textContent = excluded.length + " unrelated result(s) excluded by the keyword relevance filter.";
+        factList.append(note);
+      }
+    }
+
+    const news = evidence && evidence.news_coverage;
+    if (!news || news.status !== "success" || !news.result) {
+      const message = document.createElement("p");
+      message.className = "evidence-empty";
+      message.textContent = news && news.message ? news.message : "News coverage is temporarily unavailable.";
+      newsList.append(message);
+    } else {
+      const articles = news.result.articles || [];
+      if (!articles.length) {
+        const empty = document.createElement("p");
+        empty.className = "evidence-empty";
+        empty.textContent = "No matching news articles were found in the selected time range.";
+        newsList.append(empty);
+      }
+      articles.forEach((article) => {
+        const card = document.createElement("article");
+        card.className = "evidence-card";
+        const heading = document.createElement("h3");
+        heading.textContent = article.title || "Untitled article";
+        const link = makeEvidenceLink(article.url, "Open source article");
+        if (link) heading.replaceChildren(link);
+        card.append(heading);
+
+        const meta = document.createElement("p");
+        meta.className = "evidence-meta";
+        meta.textContent = [article.domain || "Unknown source", article.published_at || ""].filter(Boolean).join(" · ");
+        card.append(meta);
+        newsList.append(card);
+      });
+    }
+  }
+
   function renderResult(data, headlineOnly) {
     const result = data.result || {};
+    renderEvidence(data.evidence);
     const label = normalizeLabel(result.label);
     const pct = label ? toPercentages(result, label) : null;
     if (!label || !pct) {
