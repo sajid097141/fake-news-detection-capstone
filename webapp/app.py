@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 from predictor import predict_news
-from factcheck import search_fact_checks, FactCheckAPIError
+from factcheck import (
+    search_fact_checks,
+    add_relevance_labels,
+    FactCheckAPIError,
+)
 
 import re
 from collections import Counter
@@ -133,7 +137,7 @@ def predict():
 
 @app.route("/api/fact-check", methods=["POST"])
 def fact_check():
-    """Retrieve published fact-check reviews related to a headline or article."""
+    """Retrieve and classify published fact-check reviews by claim relevance."""
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
@@ -167,15 +171,26 @@ def fact_check():
         }), 400
 
     try:
-        result = search_fact_checks(query, page_size=5)
+        raw_result = search_fact_checks(query, page_size=5)
+        relevance_result = add_relevance_labels(
+            query,
+            raw_result["claims"],
+        )
+
+        result = {
+            "query": raw_result["query"],
+            "total_results": raw_result["total_results"],
+            **relevance_result,
+        }
+
         return jsonify({
             "status": "success",
             "source": "Google Fact Check Tools",
             "result": result,
             "disclaimer": (
-                "These are existing third-party fact-check reviews related "
-                "to your search. They may discuss similar but different claims. "
-                "Review each source before drawing a conclusion."
+                "Relevance labels are based on lexical overlap, not semantic "
+                "verification. Related claims may discuss a different assertion. "
+                "Third-party ratings are not independent conclusions by VERITAS."
             )
         })
 
