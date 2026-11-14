@@ -1,6 +1,6 @@
-
 from flask import Flask, request, jsonify, render_template
 from predictor import predict_news
+from factcheck import search_fact_checks, FactCheckAPIError
 
 import re
 from collections import Counter
@@ -128,6 +128,72 @@ def predict():
 
         return jsonify({
             "error": "An internal error occurred while processing the text."
+        }), 500
+
+
+@app.route("/api/fact-check", methods=["POST"])
+def fact_check():
+    """Retrieve published fact-check reviews related to a headline or article."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid request. Please send JSON data."
+        }), 400
+
+    title = data.get("title", "")
+    article = data.get("article", "")
+
+    if not isinstance(title, str) or not isinstance(article, str):
+        return jsonify({
+            "error": "Headline and article must be text."
+        }), 400
+
+    title = title.strip()
+    article = article.strip()
+
+    if len(title) > 1000 or len(article) > 50000:
+        return jsonify({
+            "error": "Input exceeds the allowed character limit."
+        }), 400
+
+    # Prefer the headline because it is usually a more focused search query.
+    # If no headline is supplied, use the beginning of the article.
+    query = title or article[:500]
+
+    if len(query) < 10:
+        return jsonify({
+            "error": "Please provide a longer headline or article for fact-check search."
+        }), 400
+
+    try:
+        result = search_fact_checks(query, page_size=5)
+        return jsonify({
+            "status": "success",
+            "source": "Google Fact Check Tools",
+            "result": result,
+            "disclaimer": (
+                "These are existing third-party fact-check reviews related "
+                "to your search. They may discuss similar but different claims. "
+                "Review each source before drawing a conclusion."
+            )
+        })
+
+    except FactCheckAPIError as error:
+        app.logger.warning("Fact-check lookup failed: %s", error)
+        return jsonify({
+            "error": str(error)
+        }), 502
+
+    except (TypeError, ValueError):
+        return jsonify({
+            "error": "Invalid fact-check search input."
+        }), 400
+
+    except Exception:
+        app.logger.exception("Fact-check lookup failed")
+        return jsonify({
+            "error": "An internal error occurred during live fact-check search."
         }), 500
 
 
