@@ -84,6 +84,23 @@
         <p class="notice notice-warn" id="result-experimental" hidden>Experimental result: only a headline was supplied. Treat this prediction with extra caution.</p>
         <p class="result-disclaimer" id="result-disclaimer">This is a machine-learning prediction based on text patterns. It is not a fact check.</p>
       </div>
+
+      <div class="evidence-grid" id="evidence-grid" aria-label="External evidence">
+        <section class="panel evidence-panel" aria-labelledby="fact-evidence-title">
+          <h2 id="fact-evidence-title">Existing fact-check reviews</h2>
+          <p class="evidence-intro">Published third-party reviews related to the submitted headline.</p>
+          <div id="fact-evidence-list" class="evidence-list">
+            <p class="evidence-empty">No fact-check results loaded.</p>
+          </div>
+        </section>
+        <section class="panel evidence-panel" aria-labelledby="news-evidence-title">
+          <h2 id="news-evidence-title">News coverage</h2>
+          <p class="evidence-intro">Recent news articles matching the submitted headline.</p>
+          <div id="news-evidence-list" class="evidence-list">
+            <p class="evidence-empty">No news coverage loaded.</p>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section id="about" class="wrap about" aria-labelledby="about-title">
