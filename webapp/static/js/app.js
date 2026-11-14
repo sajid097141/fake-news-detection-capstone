@@ -102,7 +102,7 @@
 
 
   function makeEvidenceLink(url, label) {
-    if (typeof url !== "string" || !/^https?:\\/\\//i.test(url)) return null;
+    if (typeof url !== "string" || !/^https?:\/\//i.test(url)) return null;
     const link = document.createElement("a");
     link.href = url;
     link.target = "_blank";
