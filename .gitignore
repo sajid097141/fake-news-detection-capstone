@@ -19,3 +19,5 @@ cleaned_WELFake.csv
 
 # Trained model
 fake_news_model.joblib
+
+.env
