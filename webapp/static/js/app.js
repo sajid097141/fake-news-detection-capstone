@@ -2,6 +2,45 @@
 (() => {
   "use strict";
 
+  /* ---------- Theme management ---------- */
+
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = document.getElementById("theme-icon");
+  const themeLabel = document.getElementById("theme-label");
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+
+    const isDark = theme === "dark";
+    themeIcon.textContent = isDark ? "☀" : "☾";
+    themeLabel.textContent = isDark ? "Light mode" : "Dark mode";
+
+    themeToggle.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+
+    document.querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", isDark ? "#060a18" : "#f2f6fc");
+  }
+
+  const savedTheme = localStorage.getItem("veritas-theme");
+  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+
+  applyTheme(savedTheme || systemTheme);
+
+  themeToggle.addEventListener("click", () => {
+    const nextTheme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+
+    applyTheme(nextTheme);
+    localStorage.setItem("veritas-theme", nextTheme);
+  });
+
+
+
   const API_URL = "/api/analyze";
   const TIMEOUT_MS = 60000;
   const $ = (id) => document.getElementById(id);
